@@ -1130,3 +1130,31 @@ if (kakaoShareBtn) {
     });
 
 }
+
+/* =========================
+   NAVER MAP
+========================= */
+
+const naverMapContainer = document.getElementById("naverMap");
+
+if (naverMapContainer && window.naver && naver.maps) {
+
+    const venuePosition = new naver.maps.LatLng(
+        37.4835986618593,
+        127.017864818801
+    );
+
+    const venueMap = new naver.maps.Map("naverMap", {
+        center: venuePosition,
+        zoom: 17,
+        zoomControl: true,
+        zoomControlOptions: {
+            position: naver.maps.Position.RIGHT_CENTER
+        }
+    });
+
+    new naver.maps.Marker({
+        position: venuePosition,
+        map: venueMap
+    });
+}

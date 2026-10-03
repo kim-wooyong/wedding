@@ -1107,3 +1107,26 @@ revealElements.forEach(element => {
     revealObserver.observe(element);
 
 });
+
+/* =========================
+   KAKAO SHARE
+========================= */
+
+if (window.Kakao && !Kakao.isInitialized()) {
+    Kakao.init("81f5cb4d1c6b6653898dc7c52141799d");
+}
+
+const kakaoShareBtn =
+    document.getElementById("kakaoShareBtn");
+
+if (kakaoShareBtn) {
+
+    kakaoShareBtn.addEventListener("click", function () {
+
+        Kakao.Share.sendScrap({
+            requestUrl: "https://wooparkwedding.com/"
+        });
+
+    });
+
+}

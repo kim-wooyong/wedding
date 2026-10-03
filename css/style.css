@@ -11,7 +11,7 @@ button,a{font:inherit}
 .page{width:min(100%,var(--max));margin:0 auto;background:#fff;min-height:100vh;overflow:hidden}
 .section{padding:72px 28px;text-align:center}
 .soft{background:var(--soft)}
-.cover{padding:80px 24px 58px}
+.cover{padding:40px 24px 58px}
 .cover-art{display:block;width:100%;height:auto;margin:0 auto 18px}
 .eyebrow,.section-kicker{font-size:12px;letter-spacing:.34em;margin:0 0 24px}
 .names{display:flex;justify-content:center;gap:12px;align-items:center;font-size:30px}

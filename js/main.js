@@ -46,9 +46,7 @@ for (let i = 1; i <= 31; i++) {
     img.loading = i === 1 ? "eager" : "lazy";
 
 
-    /* =========================
-       사진 클릭 → 크게 보기
-    ========================= */
+    /* 사진 클릭 → 크게 보기 */
 
     img.addEventListener("click", () => {
 
@@ -77,14 +75,6 @@ more.addEventListener("click", () => {
     document
         .querySelectorAll(".photo-slot")
         .forEach((el, index) => {
-
-            /*
-               처음 상태
-               1번 메인 + 2~7번까지 표시
-
-               더보기
-               31장 전부 표시
-            */
 
             el.classList.toggle(
                 "visible",
@@ -166,8 +156,6 @@ function updateLightboxImage() {
         `웨딩사진 ${currentPhotoIndex}`;
 
 
-    /* 현재 사진 번호 */
-
     if (lightboxCounter) {
 
         lightboxCounter.textContent =
@@ -190,8 +178,6 @@ function openLightbox() {
         "aria-hidden",
         "false"
     );
-
-    /* 뒤쪽 페이지 스크롤 잠금 */
 
     document.body.style.overflow =
         "hidden";
@@ -238,13 +224,7 @@ function closeLightbox() {
         "true"
     );
 
-    /*
-       확대창 닫은 뒤
-       페이지 스크롤 다시 활성화
-    */
-
-    document.body.style.overflow =
-        "";
+    document.body.style.overflow = "";
 
 }
 
@@ -253,44 +233,33 @@ function closeLightbox() {
    확대창 버튼
 ========================= */
 
-
-/* X 버튼 */
-
 lightboxClose.addEventListener(
     "click",
     closeLightbox
 );
 
 
-/* 왼쪽 버튼 */
-
 lightboxPrev.addEventListener(
     "click",
     e => {
 
         e.stopPropagation();
-
         showPreviousPhoto();
 
     }
 );
 
 
-/* 오른쪽 버튼 */
-
 lightboxNext.addEventListener(
     "click",
     e => {
 
         e.stopPropagation();
-
         showNextPhoto();
 
     }
 );
 
-
-/* 검은 배경 누르면 닫기 */
 
 lightbox.addEventListener(
     "click",
@@ -314,11 +283,6 @@ document.addEventListener(
     "keydown",
     e => {
 
-        /*
-           확대창이 열려있지 않으면
-           아무것도 하지 않음
-        */
-
         if (
             !lightbox.classList.contains("open")
         ) {
@@ -328,8 +292,6 @@ document.addEventListener(
         }
 
 
-        /* 왼쪽 방향키 */
-
         if (e.key === "ArrowLeft") {
 
             showPreviousPhoto();
@@ -337,16 +299,12 @@ document.addEventListener(
         }
 
 
-        /* 오른쪽 방향키 */
-
         if (e.key === "ArrowRight") {
 
             showNextPhoto();
 
         }
 
-
-        /* ESC */
 
         if (e.key === "Escape") {
 
@@ -362,9 +320,6 @@ document.addEventListener(
    모바일 스와이프
 ========================= */
 
-
-/* 손가락을 처음 댄 위치 */
-
 lightbox.addEventListener(
     "touchstart",
     e => {
@@ -379,8 +334,6 @@ lightbox.addEventListener(
 );
 
 
-/* 손가락을 뗀 위치 */
-
 lightbox.addEventListener(
     "touchend",
     e => {
@@ -393,11 +346,6 @@ lightbox.addEventListener(
             touchEndX - touchStartX;
 
 
-        /*
-           50px 이하 움직임은
-           스와이프로 처리하지 않음
-        */
-
         if (
             Math.abs(swipeDistance) < 50
         ) {
@@ -407,22 +355,11 @@ lightbox.addEventListener(
         }
 
 
-        /*
-           오른쪽으로 밀기
-           → 이전 사진
-        */
-
         if (swipeDistance > 0) {
 
             showPreviousPhoto();
 
         }
-
-
-        /*
-           왼쪽으로 밀기
-           → 다음 사진
-        */
 
         else {
 
@@ -526,9 +463,23 @@ setInterval(
 );
 
 
-/* =========================
-   축하 메시지
-========================= */
+/* =====================================================
+   축하 메시지 - SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://vorpbdcetyigeetmycos.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_i68yAhtWnFuM7CnzkOrQEw_MRggYNJp";
+
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
 
 const guestbookForm =
     document.getElementById(
@@ -571,51 +522,31 @@ const messagesPerPage = 5;
 let currentGuestbookPage = 1;
 
 
-/* =========================
-   저장된 메시지 불러오기
-========================= */
+/* Supabase에서 받아온 메시지 */
 
 let guestbookMessages = [];
 
 
-try {
-
-    guestbookMessages =
-        JSON.parse(
-            localStorage.getItem(
-                "weddingGuestbook"
-            )
-        ) || [];
-
-}
-
-catch (error) {
-
-    guestbookMessages = [];
-
-}
-
-
 /* =========================
-   날짜 만들기
+   날짜 표시
 ========================= */
 
-function getToday() {
+function formatGuestbookDate(dateString) {
 
-    const today =
-        new Date();
+    const date =
+        new Date(dateString);
 
     const year =
-        today.getFullYear();
+        date.getFullYear();
 
     const month =
         String(
-            today.getMonth() + 1
+            date.getMonth() + 1
         ).padStart(2, "0");
 
     const day =
         String(
-            today.getDate()
+            date.getDate()
         ).padStart(2, "0");
 
     return `${year}.${month}.${day}`;
@@ -624,7 +555,73 @@ function getToday() {
 
 
 /* =========================
-   페이지네이션 만들기
+   Supabase 메시지 불러오기
+========================= */
+
+async function loadGuestbookMessages() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("guestbook")
+            .select(
+                "id, created_at, name, message"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "방명록 불러오기 오류:",
+            error
+        );
+
+        guestbookMessages = [];
+
+        renderGuestbook();
+
+        return;
+
+    }
+
+
+    guestbookMessages =
+        (data || []).map(
+            item => ({
+
+                id:
+                    item.id,
+
+                name:
+                    item.name,
+
+                message:
+                    item.message,
+
+                date:
+                    formatGuestbookDate(
+                        item.created_at
+                    )
+
+            })
+        );
+
+
+    renderGuestbook();
+
+}
+
+
+/* =========================
+   페이지네이션
 ========================= */
 
 function renderGuestbookPagination() {
@@ -639,11 +636,6 @@ function renderGuestbookPagination() {
             messagesPerPage
         );
 
-
-    /*
-       메시지가 5개 이하라면
-       페이지 번호 숨김
-    */
 
     if (totalPages <= 1) {
 
@@ -700,7 +692,7 @@ function renderGuestbookPagination() {
     );
 
 
-    /* 페이지 숫자 */
+    /* 페이지 번호 */
 
     for (
         let page = 1;
@@ -833,7 +825,7 @@ function renderGuestbook() {
     }
 
 
-    /* 메시지가 있으면 안내문 숨김 */
+    /* 메시지가 있으면 빈 메시지 안내 숨김 */
 
     if (guestbookEmpty) {
 
@@ -971,7 +963,7 @@ if (guestbookForm) {
 
     guestbookForm.addEventListener(
         "submit",
-        function (e) {
+        async function (e) {
 
             e.preventDefault();
 
@@ -997,42 +989,49 @@ if (guestbookForm) {
             }
 
 
-            const newMessage = {
-
-                name: name,
-
-                message: message,
-
-                date: getToday()
-
-            };
-
-
-            guestbookMessages.unshift(
-                newMessage
-            );
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("guestbook")
+                    .insert([
+                        {
+                            name: name,
+                            message: message
+                        }
+                    ]);
 
 
-            localStorage.setItem(
-                "weddingGuestbook",
-                JSON.stringify(
-                    guestbookMessages
-                )
-            );
+            if (error) {
+
+                console.error(
+                    "방명록 등록 오류:",
+                    error
+                );
+
+                alert(
+                    "메시지 등록에 실패했습니다. 다시 시도해주세요."
+                );
+
+                return;
+
+            }
 
 
-            currentGuestbookPage =
-                1;
+            /* 등록 후 첫 페이지로 */
+
+            currentGuestbookPage = 1;
 
 
-            guestName.value =
-                "";
+            /* 입력창 초기화 */
 
-            guestMessage.value =
-                "";
+            guestName.value = "";
+            guestMessage.value = "";
 
 
-            renderGuestbook();
+            /* Supabase에서 다시 불러오기 */
+
+            await loadGuestbookMessages();
 
 
             toast.textContent =
@@ -1064,7 +1063,7 @@ if (guestbookForm) {
    처음 페이지를 열었을 때
 ========================= */
 
-renderGuestbook();
+loadGuestbookMessages();
 
 
 /* =========================
@@ -1101,6 +1100,7 @@ const revealObserver =
             rootMargin: "0px 0px -40px 0px"
         }
     );
+
 
 revealElements.forEach(element => {
 
